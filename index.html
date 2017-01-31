@@ -1,0 +1,98 @@
+<!doctype html>
+<head>
+  <title>Monster Bash</title>
+  <!-- bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <!-- vue.js -->
+  <script src="https://unpkg.com/vue/dist/vue.js"></script>
+
+  <style>
+    body {
+      margin: 1em;
+    }
+    main {
+      max-width: 960px;
+      margin: 0 auto;
+    }
+    .status-update {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+    .status-update--monster { color: red; }
+    .status-update--player { color: darkblue; }
+
+    .status-update__wrapper {
+      max-height: 200px;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <main id="app">
+    <h1 class="text-center">Monster Bash</h1>
+    <div class="row">
+      <div class="col-sm-6">
+        <div class="panel panel-info">
+            <div class="text-center panel-heading"><h2>YOU</h2></div>
+            <div class="panel-body">
+              <div class="progress">
+                <div class="progress-bar" :class="'progress-bar-' + damageAmount(playerHp)" :style="{width: playerHp  + '%'}">
+                  {{ playerHp }}
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+      <div class="col-sm-6">
+        <div class="panel panel-danger">
+            <div class="text-center panel-heading"><h2>MONSTER</h2></div>
+            <div class="panel-body">
+              <div class="progress">
+                <div class="progress-bar" :class="'progress-bar-' + damageAmount(monsterHp)" :style="{width: monsterHp + '%'}">
+                  {{ monsterHp }}
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row game-options">
+      <div class="panel text-center">
+        <template v-if="!gameInit">
+          <div class="panel-body game--pre-init">
+            <button @click="startNewGame()" class="btn btn-lg">Start New Game</button>
+          </div>
+        </template>
+        <template v-else>
+          <div class="panel-body game--init">
+            <div class="btn-group" role="group">
+              <button class="btn btn-lg btn-danger" @click="attack()">Attack</button>
+              <button class="btn btn-lg btn-warning" @click="specialAttack()">Special Attack</button>
+              <button class="btn btn-lg btn-success" @click="heal()">Heal</button>
+              <button class="btn btn-lg btn-default" @click="startNewGame()">Restart</button>
+            </div>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <div v-if="gameInit" class="row status">
+      <div class="status-update__wrapper panel text-center">
+        <div class="panel-body">
+          <template v-for="update in status">
+            <template v-if="update.type!='death'">
+              <p class="status-update" :class="update.char == 'player' ? 'bg-info status-update--player' : 'bg-danger status-update--monster'" v-if="update.str > 0">{{update.char}} {{update.type}} - {{update.str}} dmg</p>
+              <p class="bg-warning status-update" v-else>{{update.char}} missed!</p>
+            </template>
+            <template v-else>
+              <p class="status-update bg-success">{{update.char}} has been defeated!</p>
+            </template>
+          </template>
+        </div>
+      </div>
+    </div>
+
+  </main>
+  <script src="script.js"></script>
+</body>
